@@ -1,0 +1,870 @@
+SELECT "EIN",
+  "First",
+  "Last",
+  "Organization",
+  "City",
+  "State",
+  "Job Title",
+  "Course ID",
+  label.label_value1 AS "Course Title",
+  "Assigned",
+  "Required",
+  "Completed",
+  "Score" ,
+  "Status"
+FROM
+  (SELECT *
+  FROM
+    (SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                   AS "First",
+      student.lname                   AS "Last",
+      student.dmn_id                  AS "Organization",
+      student.city                    AS "City",
+      student.state                   AS "State",
+      student.job_title               AS "Job Title",
+      qualcpnt.cpnt_id                AS "Course ID",
+      qualcpnt.assgn_dte              AS "Assigned",
+      qualcpnt.req_dte                AS "Required",
+      qualcpnt.compl_dte              AS "Completed",
+      "SCORE"                         AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TOBACCO_v2'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-TOBACCO_v2'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-TOBACCO_v2'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+      '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', 
+    '6137', '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TOBACCO_v2'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-TOBACCO_v2'
+    AND qualcpnt.stud_id   = student.stud_id
+      --and student.stud_id = '699848'
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141','6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TOBACCO'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-TOBACCO'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-TOBACCO'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TOBACCO'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-TOBACCO'
+    AND qualcpnt.stud_id   = student.stud_id
+      --and student.stud_id = '699848'
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141','6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    )
+  WHERE "Status" <> 'COMPLETED'
+  AND "EIN" NOT LIKE 'T%'
+  UNION
+  SELECT *
+  FROM
+    (SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                   AS "First",
+      student.lname                   AS "Last",
+      student.dmn_id                  AS "Organization",
+      student.city                    AS "City",
+      student.state                   AS "State",
+      student.job_title               AS "Job Title",
+      qualcpnt.cpnt_id                AS "Course ID",
+      qualcpnt.assgn_dte              AS "Assigned",
+      qualcpnt.req_dte                AS "Required",
+      qualcpnt.compl_dte              AS "Completed",
+      "SCORE"                         AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TP-VT'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-TP-VT'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-TP-VT'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-TP-VT'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-TP-VT'
+    AND qualcpnt.stud_id   = student.stud_id
+      --and student.stud_id = '699848'
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141','6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-FL'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-BATP-FL'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-BATP-FL'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+      '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-FL'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-BATP-FL'
+    AND qualcpnt.stud_id   = student.stud_id
+      --and student.stud_id = '699848'
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141','6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-TX'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-BATP-TX'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-BATP-TX'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141', '6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-TX'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-BATP-TX'
+    AND qualcpnt.stud_id   = student.stud_id
+      --and student.stud_id = '699848'
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    AND student.jp_id     IN ('6139','50','6123','6563','6585','6125','6135', '6137', 
+    '6141','6461','6541','6685','1123','1119','1121','1125', '6561','6133','6131','856','6149','156')
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-NC'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-BATP-NC'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-BATP-NC'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-NC'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-BATP-NC'
+    AND qualcpnt.stud_id   = student.stud_id
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-SC'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-BATP-SC'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-BATP-SC'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-SC'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-BATP-SC'
+    AND qualcpnt.stud_id   = student.stud_id
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_qual_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-CA'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id   = 'SO-BATP-CA'
+    AND qualcpnt.stud_id     = student.stud_id
+    AND student.stud_id NOT IN
+      (SELECT DISTINCT(student.stud_id)
+      FROM plateau.pa_student student,
+        plateau.pa_stud_cpnt qualcpnt
+      WHERE qualcpnt.cpnt_id = 'SO-BATP-CA'
+      AND qualcpnt.stud_id   = student.stud_id
+      AND(qualcpnt.compl_dte =
+        (SELECT MAX(qualcpnt2.compl_dte)
+        FROM plateau.pa_stud_cpnt qualcpnt2
+        WHERE qualcpnt2.stud_id = student.stud_id
+        AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+        )
+      OR qualcpnt.compl_dte IS NULL)
+      )
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_qual_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT DISTINCT(student.stud_id) AS "EIN",
+      student.fname                  AS "First",
+      student.lname                  AS "Last",
+      student.dmn_id                 AS "Organization",
+      student.city                   AS "City",
+      student.state                  AS "State",
+      student.job_title              AS "Job Title",
+      qualcpnt.cpnt_id               AS "Course ID",
+      qualcpnt.assgn_dte             AS "Assigned",
+      qualcpnt.req_dte               AS "Required",
+      qualcpnt.compl_dte             AS "Completed",
+      "SCORE"                        AS "Score",
+      CASE
+        WHEN qualcpnt.compl_dte IS NOT NULL
+        THEN 'COMPLETED'
+        WHEN qualcpnt.compl_dte IS NULL
+        AND ONLINE_LAUNCHED      = 'Y'
+        THEN 'IN PROGRESS'
+        ELSE 'REGISTERED'
+      END AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt,
+      (SELECT student.stud_id AS "MATCHID",
+        cmod.score            AS "SCORE"
+      FROM plateau.pa_student student,
+        plateau.pa_cbt_stud_cpnt stcpnt,
+        PLATEAU.pa_cbt_stud_cpnt_mod cmod
+      WHERE student.stud_id   = stcpnt.stud_id
+      AND stcpnt.cpnt_id      = 'SO-BATP-CA'
+      AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+      )
+    WHERE qualcpnt.cpnt_id = 'SO-BATP-CA'
+    AND qualcpnt.stud_id   = student.stud_id
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    AND "MATCHID"(+)       = student.stud_id
+    UNION
+    SELECT student.stud_id    AS "EIN",
+      student.fname           AS "First",
+      student.lname           AS "Last",
+      student.dmn_id          AS "Organization",
+      student.city            AS "City",
+      student.state           AS "State",
+      student.job_title       AS "Job Title",
+      CompEvHist.cpnt_id      AS "Course ID",
+      NULL                    AS "Assigned",
+      NULL                    AS "Required",
+      CompEvHist.compl_dte    AS "Completed",
+      NULL                    AS "Score",
+      CompEvHist.cmpl_stat_id AS "Status"
+    FROM plateau.pa_student student,
+      plateau.pa_cpnt_evthst CompEvHist
+    WHERE CompEvHist.stud_id = student.stud_id
+    AND CompEvHist.cpnt_id  IN ('SO-AST_FY10_v2')
+    AND student.emp_stat_id  = 'Employee'
+    AND CompEvHist.compl_dte =
+      (SELECT MAX(CompEvHist2.compl_dte)
+      FROM plateau.pa_cpnt_evthst CompEvHist2
+      WHERE CompEvHist2.stud_id = student.stud_id
+      AND CompEvHist.cpnt_id    = CompEvHist2.cpnt_id
+      )
+    )
+  WHERE "EIN" NOT LIKE 'T%'
+  AND "Status" NOT IN ('COMPLETED', 'ONLINE-COMP')
+  ),
+  plateau.pa_catalog_item assign,
+  PLATEAU.PA_I18N_ACTIVE_LOCALE_LABEL label
+WHERE assign.description = label.label_id
+AND assign.cpnt_id       = "Course ID"
