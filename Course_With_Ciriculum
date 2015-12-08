@@ -1,0 +1,118 @@
+SELECT "EIN",
+  "First",
+  "Last",
+  "Organization",
+  "Job Title",
+  "Course ID",
+  "CIRICULA",
+  "Assigned",
+  "Required",
+  "Completed"
+FROM
+  (SELECT DISTINCT(student.stud_id) AS "EIN",
+    student.fname                   AS "First",
+    student.lname                   AS "Last",
+    student.dmn_id                  AS "Organization",
+    student.job_title               AS "Job Title",
+    qualcpnt.cpnt_id                AS "Course ID",
+    qualcpnt.assgn_dte              AS "Assigned",
+    qualcpnt.req_dte                AS "Required",
+    qualcpnt.compl_dte              AS "Completed",
+    CASE
+      WHEN qualcpnt.compl_dte IS NOT NULL
+      THEN 'COMPLETED'
+      WHEN qualcpnt.compl_dte IS NULL
+      AND ONLINE_LAUNCHED      = 'Y'
+      THEN 'IN PROGRESS'
+      ELSE 'REGISTERED'
+    END AS "Status"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_qual_cpnt qualcpnt,
+    (SELECT student.stud_id AS "MATCHID",
+      cmod.score            AS "SCORE"
+    FROM plateau.pa_student student,
+      plateau.pa_cbt_stud_cpnt stcpnt,
+      PLATEAU.pa_cbt_stud_cpnt_mod cmod
+    WHERE student.stud_id   = stcpnt.stud_id
+    AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+    )
+  WHERE qualcpnt.stud_id   = student.stud_id
+  AND qualcpnt.compl_dte  IS NULL
+  AND student.stud_id NOT IN
+    (SELECT DISTINCT(student.stud_id)
+    FROM plateau.pa_student student,
+      plateau.pa_stud_cpnt qualcpnt
+    WHERE qualcpnt.stud_id = student.stud_id
+    AND(qualcpnt.compl_dte =
+      (SELECT MAX(qualcpnt2.compl_dte)
+      FROM plateau.pa_stud_cpnt qualcpnt2
+      WHERE qualcpnt2.stud_id = student.stud_id
+      AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+      )
+    OR qualcpnt.compl_dte IS NULL)
+    )
+  AND(qualcpnt.compl_dte =
+    (SELECT MAX(qualcpnt2.compl_dte)
+    FROM plateau.pa_stud_qual_cpnt qualcpnt2
+    WHERE qualcpnt2.stud_id = student.stud_id
+    AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+    )
+  OR qualcpnt.compl_dte IS NULL)
+  AND "MATCHID"(+)       = student.stud_id
+  UNION
+  SELECT DISTINCT(student.stud_id) AS "EIN",
+    student.fname                  AS "First",
+    student.lname                  AS "Last",
+    student.dmn_id                 AS "Organization",
+    student.job_title              AS "Job Title",
+    qualcpnt.cpnt_id               AS "Course ID",
+    qualcpnt.assgn_dte             AS "Assigned",
+    qualcpnt.req_dte               AS "Required",
+    qualcpnt.compl_dte             AS "Completed",
+    CASE
+      WHEN qualcpnt.compl_dte IS NOT NULL
+      THEN 'COMPLETED'
+      WHEN qualcpnt.compl_dte IS NULL
+      AND ONLINE_LAUNCHED      = 'Y'
+      THEN 'IN PROGRESS'
+      ELSE 'REGISTERED'
+    END AS "Status"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_cpnt qualcpnt,
+    (SELECT student.stud_id AS "MATCHID",
+      cmod.score            AS "SCORE"
+    FROM plateau.pa_student student,
+      plateau.pa_cbt_stud_cpnt stcpnt,
+      PLATEAU.pa_cbt_stud_cpnt_mod cmod
+    WHERE student.stud_id   = stcpnt.stud_id
+    AND stcpnt.stud_cpnt_id = cmod.stud_cpnt_id
+    )
+  WHERE qualcpnt.stud_id = student.stud_id
+  AND(qualcpnt.compl_dte =
+    (SELECT MAX(qualcpnt2.compl_dte)
+    FROM plateau.pa_stud_cpnt qualcpnt2
+    WHERE qualcpnt2.stud_id = student.stud_id
+    AND qualcpnt.cpnt_id    = qualcpnt2.cpnt_id
+    )
+  OR qualcpnt.compl_dte  IS NULL)
+  AND "MATCHID"(+)        = student.stud_id
+  AND qualcpnt.compl_dte IS NULL
+  ),
+  (SELECT DISTINCT(student.stud_id) AS "EID",
+    qualcp.cpnt_id                  AS "CPNT",
+    qualcp.qual_id                  AS "CIRICULA"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_qual_cpnt qualst,
+    PLATEAU.pa_qual_cpnt qualcp
+  WHERE student.term_dte IS NULL
+  AND qualst.stud_id      = student.stud_id
+  AND qualst.qual_id      = qualcp.qual_id
+  ORDER BY student.stud_id,
+    qualcp.qual_id
+  )
+WHERE "EIN"     = "EID" (+)
+AND "Course ID" = "CPNT" (+)
+--AND "EIN"       = '696494' 
+and "Completed" is null
+and ("Organization" like '98%' or "Organization" = 'Modified Duty')
+and "Required" < trunc(sysdate)
