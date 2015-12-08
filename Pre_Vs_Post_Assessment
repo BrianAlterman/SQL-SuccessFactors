@@ -1,0 +1,843 @@
+SELECT "EIN",
+  "First Name",
+  "Last Name",
+  "Hire Date",
+  "Organization",
+  "Job Title",
+  "Supervisor ID",
+  Boss.fname AS "Sup First",
+  Boss.lname AS "Sup Last" ,
+  "Survey ID (Pre)",
+  "Completed (Pre)",
+  "Correct (Pre)",
+  "Percentage (Pre)",
+  "Survey ID (Post)",
+  "Completed (Post)",
+  "Correct (Post)",
+  "Percentage (Post)",
+  CASE
+    WHEN"POSTQ1VAL" IS NOT NULL
+    THEN ((NVL("POSTQ1VAL",0) + NVL("POSTQ2VAL",0)+NVL("POSTQ3VAL",0)+NVL("POSTQ4VAL",0)+
+    NVL("POSTQ5VAL",0)+NVL("POSTQ6VAL",0)+ NVL("POSTQ7VAL",0)+NVL("POSTQ8VAL",0)+
+    NVL("POSTQ9VAL",0)+NVL("POSTQ10VAL",0)) - (NVL("PREQ1VAL",0) + NVL("PREQ2VAL",0)+ 
+    NVL("PREQ3VAL",0)+NVL("PREQ4VAL",0)+NVL("PREQ5VAL",0)+NVL("PREQ6VAL",0)+NVL("PREQ7VAL",0)+
+    NVL("PREQ8VAL",0)+NVL("PREQ9VAL",0)+ NVL("PREQ10VAL",0)))*10
+    ELSE NULL
+  END AS "Variance A",
+  CASE
+    WHEN"POSTQ1VAL" IS NOT NULL
+    THEN TO_CHAR((((NVL("POSTQ1VAL",0) + NVL("POSTQ2VAL",0)+NVL("POSTQ3VAL",0)+NVL("POSTQ4VAL",0)+
+    NVL("POSTQ5VAL",0)+NVL("POSTQ6VAL",0)+ NVL("POSTQ7VAL",0)+NVL("POSTQ8VAL",0)+NVL("POSTQ9VAL",0)+
+    NVL("POSTQ10VAL",0)) / (NVL("PREQ1VAL",0) + NVL("PREQ2VAL",0)+ NVL("PREQ3VAL",0)+NVL("PREQ4VAL",0)+
+    NVL("PREQ5VAL",0)+NVL("PREQ6VAL",0)+NVL("PREQ7VAL",0)+NVL("PREQ8VAL",0)+NVL("PREQ9VAL",0)+ 
+    NVL("PREQ10VAL",0)))*100)-100,'999.99')
+      ||'%'
+    ELSE NULL
+  END AS "Variance B"
+FROM
+  (SELECT "PREQ1ID" AS "EIN",
+    "PREFIRST"      AS "First Name",
+    "PRELAST"       AS "Last Name",
+    "Org"           AS "Organization",
+    "Hire"          AS "Hire Date",
+    "Job Title",
+    "Supervisor ID",
+    "PREQ1SURVEY" AS "Survey ID (Pre)",
+    "PREQ1CD"     AS "Completed (Pre)",
+    "PREQ1TEST"   AS "Question 1",
+    "PREQ1ANST"   AS "Answer 1",
+    "PREQ1VAL" ,
+    "PREQ2TEST" AS "Question 2",
+    "PREQ2ANST" AS "Answer 2",
+    "PREQ2VAL" ,
+    "PREQ3TEST" AS "Question 3",
+    "PREQ3ANST" AS "Answer 3",
+    "PREQ3VAL" ,
+    "PREQ4TEST" AS "Question 4",
+    "PREQ4ANST" AS "Answer 4",
+    "PREQ4VAL" ,
+    "PREQ5TEST" AS "Question 5",
+    "PREQ5ANST" AS "Answer 5",
+    "PREQ5VAL" ,
+    "PREQ6TEST" AS "Question 6",
+    "PREQ6ANST" AS "Answer 6",
+    "PREQ6VAL" ,
+    "PREQ7TEST" AS "Question 7",
+    "PREQ7ANST" AS "Answer 7",
+    "PREQ7VAL" ,
+    "PREQ8TEST" AS "Question 8",
+    "PREQ8ANST" AS "Answer 8",
+    "PREQ8VAL" ,
+    "PREQ9TEST" AS "Question 9",
+    "PREQ9ANST" AS "Answer 9",
+    "PREQ9VAL" ,
+    "PREQ10TEST" AS "Question 10",
+    "PREQ10ANST" AS "Answer 10",
+    "PREQ10VAL" ,
+    (NVL("PREQ1VAL",0) + NVL("PREQ2VAL",0)+NVL("PREQ3VAL",0)+NVL("PREQ4VAL",0)+NVL("PREQ5VAL",0)+
+    NVL("PREQ6VAL",0)+NVL("PREQ7VAL",0)+NVL("PREQ8VAL",0)+NVL("PREQ9VAL",0)+NVL("PREQ10VAL",0))
+    ||' / 10' AS "Correct (Pre)",
+    (( (NVL("PREQ1VAL",0) + NVL("PREQ2VAL",0) + NVL("PREQ3VAL",0) + NVL("PREQ4VAL",0) + NVL("PREQ5VAL",0) + 
+    NVL("PREQ6VAL",0) + NVL("PREQ7VAL",0) + NVL("PREQ8VAL",0) + NVL("PREQ9VAL",0) + NVL("PREQ10VAL",0)) /10) *100)
+    ||'%' AS "Percentage (Pre)"
+  FROM
+    (SELECT student.stud_id         AS "PREQ1ID",
+      student.fname                 AS "PREFIRST",
+      student.lname                 AS "PRELAST",
+      student.dmn_id                AS "Org",
+      student.super                 AS "Supervisor ID",
+      student.hire_dte              AS "Hire",
+      student.job_title             AS "Job Title",
+      survey_info.survey_id         AS "PREQ1SURVEY",
+      questions.question_text       AS "PREQ1TEST",
+      responses.question_id         AS "PREQ1QID",
+      answer.choice_label           AS "PREQ1ANST",
+      responses.stud_response_value AS "PREQ1ANSN" ,
+      survey.survey_completion_date AS "PREQ1CD",
+      CASE --ANSWER: Both improving performance and behaving differently
+        WHEN responses.stud_response_value = '139'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ1VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 336 --Development is about:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ2ID",
+      survey_info.survey_id         AS "PREQ2SURVEY",
+      questions.question_text       AS "PREQ2TEST",
+      responses.question_id         AS "PREQ2QID",
+      answer.choice_label           AS "PREQ2ANST",
+      responses.stud_response_value AS "PREQ2ANSN" ,
+      survey.survey_completion_date AS "PREQ2CD",
+      CASE --ANSWER: Development objectives address motivation; performance objectives do not address motivation
+        WHEN responses.stud_response_value = '146'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ2VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 337 --How are development objectives different from performance objectives?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ3ID",
+      survey_info.survey_id         AS "PREQ3SURVEY",
+      questions.question_text       AS "PREQ3TEST",
+      responses.question_id         AS "PREQ3QID",
+      answer.choice_label           AS "PREQ3ANST",
+      responses.stud_response_value AS "PREQ3ANSN" ,
+      survey.survey_completion_date AS "PREQ3CD",
+      CASE --ANSWER: Aspiration
+        WHEN responses.stud_response_value = '149'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ3VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 338 --Motivation comes from _______.
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ4ID",
+      survey_info.survey_id         AS "PREQ4SURVEY",
+      questions.question_text       AS "PREQ4TEST",
+      responses.question_id         AS "PREQ4QID",
+      answer.choice_label           AS "PREQ4ANST",
+      responses.stud_response_value AS "PREQ4ANSN" ,
+      survey.survey_completion_date AS "PPREQ4CD",
+      CASE --ANSWER: Aspirations, In Our Interests, and Measurable
+        WHEN responses.stud_response_value = '151'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ4VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 339 --AIM is an acronym for:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ5ID",
+      survey_info.survey_id         AS "PREQ5SURVEY",
+      questions.question_text       AS "PREQ5TEST",
+      responses.question_id         AS "PREQ5QID",
+      answer.choice_label           AS "PREQ5ANST",
+      responses.stud_response_value AS "PREQ5ANSN" ,
+      survey.survey_completion_date AS "PREQ5CD",
+      CASE --ANSWER: Ask what they want to achieve on the job
+        WHEN responses.stud_response_value = '158'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ5VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 340 --A good place to start the conversation about development objectives with your Team Member is to:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ6ID",
+      survey_info.survey_id         AS "PREQ6SURVEY",
+      questions.question_text       AS "PREQ6TEST",
+      responses.question_id         AS "PREQ6QID",
+      answer.choice_label           AS "PREQ6ANST",
+      responses.stud_response_value AS "PREQ6ANSN" ,
+      survey.survey_completion_date AS "PREQ6CD",
+      CASE --ANSWER: Change in performance
+        WHEN responses.stud_response_value = '164'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ6VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 341 --Development is measured by:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ7ID",
+      survey_info.survey_id         AS "PREQ7SURVEY",
+      questions.question_text       AS "PREQ7TEST",
+      responses.question_id         AS "PREQ7QID",
+      answer.choice_label           AS "PREQ7ANST",
+      responses.stud_response_value AS "PREQ7ANSN" ,
+      survey.survey_completion_date AS "PREQ7CD",
+      CASE --ANSWER: What are your problem areas at work?
+        WHEN responses.stud_response_value = '167'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ7VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id           = student.stud_id
+    AND survey_info.cpnt_survey_id = survey.cpnt_survey_id
+    AND survey_info.survey_id      = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id      = 342 --If your Team Member cannot tell you what motivates him/her,
+      --which of the following questions can you ask to help you determine their aspirations?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ8ID",
+      survey_info.survey_id         AS "PREQ8SURVEY",
+      questions.question_text       AS "PREQ8TEST",
+      responses.question_id         AS "PREQ8QID",
+      answer.choice_label           AS "PREQ8ANST",
+      responses.stud_response_value AS "PREQ8ANSN" ,
+      survey.survey_completion_date AS "PREQ8CD",
+      CASE --ANSWER: The person being developed
+        WHEN responses.stud_response_value = '170'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ8VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 343 --Development is the responsibility of whom?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ9ID",
+      survey_info.survey_id         AS "PREQ9SURVEY",
+      questions.question_text       AS "PREQ9TEST",
+      responses.question_id         AS "PREQ9QID",
+      answer.choice_label           AS "PREQ9ANST",
+      responses.stud_response_value AS "PREQ9ANSN" ,
+      survey.survey_completion_date AS "PREQ9CD",
+      CASE --ANSWER: What development objectives did you have at your previous company?
+        WHEN responses.stud_response_value = '177'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ9VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id         = 344 --Which of the following questions would you NOT ask a Team Member about development?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "PREQ10ID",
+      survey_info.survey_id         AS "PREQ10SURVEY",
+      questions.question_text       AS "PREQ10TEST",
+      responses.question_id         AS "PREQ10QID",
+      answer.choice_label           AS "PREQ10ANST",
+      responses.stud_response_value AS "PREQ10ANSN" ,
+      survey.survey_completion_date AS "PREQ10CD",
+      CASE --ANSWER: All of the above
+        WHEN responses.stud_response_value = '182'
+        THEN '1'
+        ELSE '0'
+      END AS "PREQ10VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id           = student.stud_id
+    AND survey_info.cpnt_survey_id = survey.cpnt_survey_id
+    AND survey_info.survey_id      = 'FD-LDS-PTFC-PRE'
+    AND responses.question_id      = 345 --Which answer below best describes the way you can track the
+      --development achievements of your Team Member?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    )
+  WHERE "PREQ1ID"    = "PREQ2ID" (+)
+  AND "PREQ1ID"      = "PREQ3ID" (+)
+  AND "PREQ1ID"      = "PREQ4ID" (+)
+  AND "PREQ1ID"      = "PREQ5ID" (+)
+  AND "PREQ1ID"      = "PREQ6ID" (+)
+  AND "PREQ1ID"      = "PREQ7ID" (+)
+  AND "PREQ1ID"      = "PREQ8ID" (+)
+  AND "PREQ1ID"      = "PREQ9ID" (+)
+  AND "PREQ1ID"      = "PREQ10ID" (+)
+  AND "PREQ1ID" NOT IN ('709533','610138','TEST-DELANEY','793611','TEST-MORGAN','TEST-SILER')
+  ),
+  (SELECT "POSTQ1ID" AS "POSTEIN",
+    --"FIRST"         AS "First Name",
+    ---"LAST"          AS "Last Name",
+    "POSTQ1SURVEY" AS "Survey ID (Post)",
+    "POSTQ1CD"     AS "Completed (Post)",
+    "POSTQ1TEST"   AS "Question 1",
+    "POSTQ1ANST"   AS "Answer 1",
+    "POSTQ1VAL" ,
+    "POSTQ2TEST" AS "Question 2",
+    "POSTQ2ANST" AS "Answer 2",
+    "POSTQ2VAL" ,
+    "POSTQ3TEST" AS "Question 3",
+    "POSTQ3ANST" AS "Answer 3",
+    "POSTQ3VAL" ,
+    "POSTQ4TEST" AS "Question 4",
+    "POSTQ4ANST" AS "Answer 4",
+    "POSTQ4VAL" ,
+    "POSTQ5TEST" AS "Question 5",
+    "POSTQ5ANST" AS "Answer 5",
+    "POSTQ5VAL" ,
+    "POSTQ6TEST" AS "Question 6",
+    "POSTQ6ANST" AS "Answer 6",
+    "POSTQ6VAL" ,
+    "POSTQ7TEST" AS "Question 7",
+    "POSTQ7ANST" AS "Answer 7",
+    "POSTQ7VAL" ,
+    "POSTQ8TEST" AS "Question 8",
+    "POSTQ8ANST" AS "Answer 8",
+    "POSTQ8VAL" ,
+    "POSTQ9TEST" AS "Question 9",
+    "POSTQ9ANST" AS "Answer 9",
+    "POSTQ9VAL" ,
+    "POSTQ10TEST" AS "Question 10",
+    "POSTQ10ANST" AS "Answer 10",
+    "POSTQ10VAL" ,
+    (NVL("POSTQ1VAL",0) + NVL("POSTQ2VAL",0)+NVL("POSTQ3VAL",0)+NVL("POSTQ4VAL",0)+NVL("POSTQ5VAL",0)+
+    NVL("POSTQ6VAL",0)+NVL("POSTQ7VAL",0)+NVL("POSTQ8VAL",0)+NVL("POSTQ9VAL",0)+NVL("POSTQ10VAL",0))
+    ||' / 10' AS "Correct (Post)",
+    (( (NVL("POSTQ1VAL",0) + NVL("POSTQ2VAL",0) + NVL("POSTQ3VAL",0) + NVL("POSTQ4VAL",0) + NVL("POSTQ5VAL",0) + 
+    NVL("POSTQ6VAL",0) + NVL("POSTQ7VAL",0) + NVL("POSTQ8VAL",0) + NVL("POSTQ9VAL",0) + NVL("POSTQ10VAL",0)) /10) *100)
+    ||'%' AS "Percentage (Post)"
+  FROM
+    (SELECT student.stud_id         AS "POSTQ1ID",
+      student.fname                 AS "FIRST",
+      student.lname                 AS "LAST",
+      survey_info.survey_id         AS "POSTQ1SURVEY",
+      questions.question_text       AS "POSTQ1TEST",
+      responses.question_id         AS "POSTQ1QID",
+      answer.choice_label           AS "POSTQ1ANST",
+      responses.stud_response_value AS "POSTQ1ANSN" ,
+      survey.survey_completion_date AS "POSTQ1CD",
+      CASE --ANSWER: Both improving performance and behaving differently
+        WHEN responses.stud_response_value = '93'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ1VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 326 --Development is about:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ2ID",
+      survey_info.survey_id         AS "POSTQ2SURVEY",
+      questions.question_text       AS "POSTQ2TEST",
+      responses.question_id         AS "POSTQ2QID",
+      answer.choice_label           AS "POSTQ2ANST",
+      responses.stud_response_value AS "POSTQ2ANSN" ,
+      survey.survey_completion_date AS "POSTQ2CD",
+      CASE --ANSWER: Development objectives address motivation; performance objectives do not address motivation
+        WHEN responses.stud_response_value = '100'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ2VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 327 --How are development objectives different from performance objectives?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ3ID",
+      survey_info.survey_id         AS "POSTQ3SURVEY",
+      questions.question_text       AS "POSTQ3TEST",
+      responses.question_id         AS "POSTQ3QID",
+      answer.choice_label           AS "POSTQ3ANST",
+      responses.stud_response_value AS "POSTQ3ANSN" ,
+      survey.survey_completion_date AS "POSTQ3CD",
+      CASE --ANSWER: Aspiration
+        WHEN responses.stud_response_value = '103'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ3VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 328 --Motivation comes from _______.
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ4ID",
+      survey_info.survey_id         AS "POSTQ4SURVEY",
+      questions.question_text       AS "POSTQ4TEST",
+      responses.question_id         AS "POSTQ4QID",
+      answer.choice_label           AS "POSTQ4ANST",
+      responses.stud_response_value AS "POSTQ4ANSN" ,
+      survey.survey_completion_date AS "POSTQ4CD",
+      CASE --ANSWER: Aspirations, In Our Interests, and Measurable
+        WHEN responses.stud_response_value = '105'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ4VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 329 --AIM is an acronym for:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ5ID",
+      survey_info.survey_id         AS "POSTQ5SURVEY",
+      questions.question_text       AS "POSTQ5TEST",
+      responses.question_id         AS "POSTQ5QID",
+      answer.choice_label           AS "POSTQ5ANST",
+      responses.stud_response_value AS "POSTQ5ANSN" ,
+      survey.survey_completion_date AS "POSTQ5CD",
+      CASE --ANSWER: Ask what they want to achieve on the job
+        WHEN responses.stud_response_value = '112'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ5VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 330 --A good place to start the conversation about development objectives with your Team Member is to:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ6ID",
+      survey_info.survey_id         AS "POSTQ6SURVEY",
+      questions.question_text       AS "POSTQ6TEST",
+      responses.question_id         AS "POSTQ6QID",
+      answer.choice_label           AS "POSTQ6ANST",
+      responses.stud_response_value AS "POSTQ6ANSN" ,
+      survey.survey_completion_date AS "POSTQ6CD",
+      CASE --ANSWER: Change in performance
+        WHEN responses.stud_response_value = '118'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ6VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 331 --Development is measured by:
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ7ID",
+      survey_info.survey_id         AS "POSTQ7SURVEY",
+      questions.question_text       AS "POSTQ7TEST",
+      responses.question_id         AS "POSTQ7QID",
+      answer.choice_label           AS "POSTQ7ANST",
+      responses.stud_response_value AS "POSTQ7ANSN" ,
+      survey.survey_completion_date AS "POSTQ7CD",
+      CASE --ANSWER: What are your problem areas at work?
+        WHEN responses.stud_response_value = '121'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ7VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id           = student.stud_id
+    AND survey_info.cpnt_survey_id = survey.cpnt_survey_id
+    AND survey_info.survey_id      = 'FD-LDS-PTFC-POST'
+    AND responses.question_id      = 332 --If your Team Member cannot tell you what motivates him/her,
+      --which of the following questions can you ask to help you determine their aspirations?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ8ID",
+      survey_info.survey_id         AS "POSTQ8SURVEY",
+      questions.question_text       AS "POSTQ8TEST",
+      responses.question_id         AS "POSTQ8QID",
+      answer.choice_label           AS "POSTQ8ANST",
+      responses.stud_response_value AS "POSTQ8ANSN" ,
+      survey.survey_completion_date AS "POSTQ8CD",
+      CASE --ANSWER: The person being developed
+        WHEN responses.stud_response_value = '124'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ8VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 333 --Development is the responsibility of whom?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ9ID",
+      survey_info.survey_id         AS "POSTQ9SURVEY",
+      questions.question_text       AS "POSTQ9TEST",
+      responses.question_id         AS "POSTQ9QID",
+      answer.choice_label           AS "POSTQ9ANST",
+      responses.stud_response_value AS "POSTQ9ANSN" ,
+      survey.survey_completion_date AS "POSTQ9CD",
+      CASE --ANSWER: What development objectives did you have at your previous company?
+        WHEN responses.stud_response_value = '131'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ9VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id              = student.stud_id
+    AND survey_info.cpnt_survey_id    = survey.cpnt_survey_id
+    AND survey_info.survey_id         = 'FD-LDS-PTFC-POST'
+    AND responses.question_id         = 334 --Which of the following questions would you NOT ask a Team Member about development?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    ),
+    (SELECT student.stud_id         AS "POSTQ10ID",
+      survey_info.survey_id         AS "POSTQ10SURVEY",
+      questions.question_text       AS "POSTQ10TEST",
+      responses.question_id         AS "POSTQ10QID",
+      answer.choice_label           AS "POSTQ10ANST",
+      responses.stud_response_value AS "POSTQ10ANSN" ,
+      survey.survey_completion_date AS "POSTQ10CD",
+      CASE --ANSWER: All of the above
+        WHEN responses.stud_response_value = '136'
+        THEN '1'
+        ELSE '0'
+      END AS "POSTQ10VAL"
+    FROM PLATEAU.pa_stud_survey survey,
+      PLATEAU.PA_STUDENT student,
+      PLATEAU.pa_cpnt_survey survey_info,
+      PLATEAU.PA_SURVEY_QUESTION questions,
+      PLATEAU.pa_survey_responses responses,
+      PLATEAU.pa_question_answer_choices answer
+    WHERE survey.stud_id           = student.stud_id
+    AND survey_info.cpnt_survey_id = survey.cpnt_survey_id
+    AND survey_info.survey_id      = 'FD-LDS-PTFC-POST'
+    AND responses.question_id      = 335 --Which answer below best describes the way you can track the
+      --development achievements of your Team Member?
+    AND survey.stud_survey_id         = responses.stud_survey_id
+    AND responses.question_id         = questions.question_id
+    AND answer.question_id            = questions.question_id
+    AND responses.stud_response_value = answer.answer_id
+      --AND survey.cpnt_survey_id         = 182
+    AND survey.survey_completion_date =
+      (SELECT MAX(survey2.survey_completion_date)
+      FROM PLATEAU.pa_stud_survey survey2
+      WHERE survey2.stud_id          = student.stud_id
+      AND survey_info.cpnt_survey_id = survey2.cpnt_survey_id
+      )
+    )
+  WHERE "POSTQ1ID" = "POSTQ2ID" (+)
+  AND "POSTQ1ID"   = "POSTQ3ID" (+)
+  AND "POSTQ1ID"   = "POSTQ4ID" (+)
+  AND "POSTQ1ID"   = "POSTQ5ID" (+)
+  AND "POSTQ1ID"   = "POSTQ6ID" (+)
+  AND "POSTQ1ID"   = "POSTQ7ID" (+)
+  AND "POSTQ1ID"   = "POSTQ8ID" (+)
+  AND "POSTQ1ID"   = "POSTQ9ID" (+)
+  AND "POSTQ1ID"   = "POSTQ10ID" (+)
+    --and "POSTQ1ID" = '610138'
+  AND "POSTQ1ID" NOT IN ('709533','610138','TEST-DELANEY','793611','TEST-MORGAN','TEST-SILER')
+  ),
+  PLATEAU.PA_STUDENT boss
+WHERE "EIN"         = "POSTEIN" (+)
+AND "Supervisor ID" = boss.stud_id (+);
