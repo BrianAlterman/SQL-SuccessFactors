@@ -1,0 +1,67 @@
+SELECT "EIN",
+  "First",
+  "Last",
+  "Organization",
+  "City",
+  "State",
+  "Job Title",
+  "Course ID",
+  cpt.NOTACTIVE,
+  "Assigned" ,
+  "Required",
+  "Completed",
+  "Status"
+FROM
+  (SELECT DISTINCT(student.stud_id) AS "EIN",
+    student.fname                   AS "First",
+    student.lname                   AS "Last",
+    student.dmn_id                  AS "Organization",
+    student.city                    AS "City",
+    student.state                   AS "State",
+    student.job_title               AS "Job Title",
+    qualcpnt.cpnt_id                AS "Course ID",
+    qualcpnt.assgn_dte              AS "Assigned",
+    qualcpnt.req_dte                AS "Required",
+    qualcpnt.compl_dte AS "Completed",
+    CASE
+      WHEN qualcpnt.compl_dte IS NOT NULL
+      THEN 'COMPLETED'
+      WHEN qualcpnt.compl_dte IS NULL
+      AND ONLINE_LAUNCHED      = 'Y'
+      THEN 'IN PROGRESS'
+      ELSE 'REGISTERED'
+    END AS "Status"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_qual_cpnt qualcpnt
+  WHERE qualcpnt.stud_id = student.stud_id
+  AND student.notactive  = 'N'
+  UNION
+  SELECT DISTINCT(student.stud_id) AS "EIN",
+    student.fname                  AS "First",
+    student.lname                  AS "Last",
+    student.dmn_id                 AS "Organization",
+    student.city                   AS "City",
+    student.state                  AS "State",
+    student.job_title              AS "Job Title",
+    qualcpnt.cpnt_id               AS "Course ID",
+    qualcpnt.assgn_dte             AS "Assigned",
+    qualcpnt.req_dte               AS "Required",
+    qualcpnt.compl_dte AS "Completed",
+    CASE
+      WHEN qualcpnt.compl_dte IS NOT NULL
+      THEN 'COMPLETED'
+      WHEN qualcpnt.compl_dte IS NULL
+      AND ONLINE_LAUNCHED      = 'Y'
+      THEN 'IN PROGRESS'
+      ELSE 'REGISTERED'
+    END AS "Status"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_cpnt qualcpnt
+  WHERE qualcpnt.stud_id = student.stud_id
+  AND student.notactive  = 'N'
+    --and student.stud_id = '699848'
+  ),
+  plateau.pa_cpnt cpt
+WHERE "Status"   <> 'COMPLETED'
+AND "Course ID"   = cpt.cpnt_id
+AND cpt.NOTACTIVE = 'Y'
