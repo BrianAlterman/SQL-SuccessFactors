@@ -1,0 +1,1033 @@
+SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",responses.question_id,
+    --"Count",
+    student.stud_id as "EIN", responses.stud_response_value AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    --AND responses.question_id        = '523' --I learned new knowledge and/or skills from this training.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  --AND responses.question_id        = '523' --I learned new knowledge and/or skills from this training.
+  AND responses.question_id        = que.question_id
+  and student.stud_id = '402814'
+;
+--Item ID: CORP-REP-STA
+--Survey ID: LEVEL-1-EVAL
+SELECT "Course", 'A' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '512' --My learning was enhanced by the knowledge of the facilitator.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '512' --My learning was enhanced by the knowledge of the facilitator.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'B' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '513' --My learning was enhanced by the experiences shared by the facilitator.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '513' --My learning was enhanced by the experiences shared by the facilitator.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'C' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '514' --I was well engaged during the session.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '514' --I was well engaged during the session.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'D' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '515' --It was easy for me to get actively involved during the session.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '515' --It was easy for me to get actively involved during the session.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'E' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '516' --I was comfortable with the pace of the program.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '516' --I was comfortable with the pace of the program.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'F' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '517' --I was comfortable with the duration of the session.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '517' --I was comfortable with the duration of the session.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'G' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '518' --I was given an opportunity to get answers to my questions.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '518' --I was given an opportunity to get answers to my questions.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+    union
+  SELECT "Course", 'H' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '519' --I was given an opportunity to practice the skills I was asked to learn (if applicable).
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '519' --I was given an opportunity to practice the skills I was asked to learn (if applicable).
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+   SELECT "Course", 'I' as "Q#",
+ 'Total: Instructor/Facilitator/Training Coach' as "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        in ('512','513','514','515','516','517','518','519' )
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id         in ('512','513','514','515','516','517','518','519' )
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    'Total: Instructor/Facilitator/Training Coach' ,
+    "Count"
+  )
+  union
+  
+  SELECT "Course", 'J' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '520' --I was given an opportunity to get answers to my questions.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '520' --I was given an opportunity to get answers to my questions.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+    union
+  SELECT "Course", 'K' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '521' --I was given an opportunity to practice the skills I was asked to learn (if applicable).
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '521' --I was given an opportunity to practice the skills I was asked to learn (if applicable).
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+   SELECT "Course", 'L' as "Q#",
+ 'Total: Materials' as "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        in ('520','521' )
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id         in ('520','521' )
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    'Total: Instructor/Facilitator/Training Coach' ,
+    "Count"
+  )
+      union
+  SELECT "Course", 'M' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '522' --I learned new knowledge and/or skills from this training.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '522' --I learned new knowledge and/or skills from this training.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'N' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(case
+    when responses.stud_response_value = '497' then '0'
+    when responses.stud_response_value = '498' then '10'
+    when responses.stud_response_value = '499' then '20'
+    when responses.stud_response_value = '500' then '30'
+    when responses.stud_response_value = '501' then '40'
+    when responses.stud_response_value = '502' then '50'
+    when responses.stud_response_value = '503' then '60'
+    when responses.stud_response_value = '504' then '70'
+    when responses.stud_response_value = '505' then '80'
+    when responses.stud_response_value = '506' then '90'
+    when responses.stud_response_value = '507' then '100'
+    else '1'
+    end )) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '523' --The INCREASE in my skill level or my knowledge of this 
+    --content before versus after the training can best be rated as: (0% is no increase and 100% is a very significant increase).
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '523' --The INCREASE in my skill level or my knowledge of this
+  --content before versus after the training can best be rated as: (0% is no increase and 100% is a very significant increase).
+  AND responses.question_id        = que.question_id
+GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+union
+  SELECT "Course", 'O' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '524' --I understood the learning objectives.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '524' --I understood the learning objectives.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'P' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '525' --I was able to relate each of the learning objectives to the learning I achieved.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '525' --I was able to relate each of the learning objectives to the learning I achieved.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+ union
+  SELECT "Course", 'Q' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '526' --I was appropriately challenged by the learning material.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '526' --I was appropriately challenged by the learning material.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+union
+   SELECT "Course", 'R' as "Q#",
+ 'Total: Program Objectives' as "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        in ('526','525', '524' )
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id         in ('526','525', '524' )
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    'Total: Program Objectives' ,
+    "Count"
+  )
+   union
+  SELECT "Course", 'S' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '527' --I will be able to apply what I learned in this course on the job.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '527' --I will be able to apply what I learned in this course on the job.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+   union
+  SELECT "Course", 'T' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '528' --Attending this course was an effective use of my time.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '528' --Attending this course was an effective use of my time.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+  SELECT "Course", 'U' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '529' --I understand how the course is aligned to Company goals and objectives.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '529' --I understand how the course is aligned to Company goals and objectives.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+    union
+  SELECT "Course", 'V' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '530' --On-the-job application of each objective was discussed during the course.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '530' --On-the-job application of each objective was discussed during the course.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+   union
+  SELECT "Course", 'W' as "Q#",
+  "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        = '531' --I would recommend this course to others.
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id        = '531' --I would recommend this course to others.
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    que.question_text ,
+    "Count"
+  )
+  union
+   SELECT "Course", 'X' as "Q#",
+ 'Total: Relevance' as "Question",
+  "Count",
+  "Score Q1",
+  round(("Score Q1"/"Count" ),2) AS "Avg"
+FROM
+  (SELECT cpnt.survey_id AS "Course",
+    que.question_text    AS "Question",
+    "Count",
+    (SUM(responses.stud_response_value)) AS "Score Q1"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    plateau.pa_cpnt_survey cpnt,
+    plateau.pa_survey_question que,
+    (SELECT cpnt.survey_id,
+      COUNT(cpnt.survey_id) AS "Count"
+    FROM plateau.pa_student student,
+      plateau.pa_stud_survey survey,
+      plateau.pa_survey_responses responses,
+      plateau.pa_cpnt_survey cpnt,
+      plateau.pa_survey_question que
+    WHERE survey.stud_id             = student.stud_id
+    AND responses.stud_survey_id (+) = survey.stud_survey_id
+    AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+    AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+    AND responses.question_id        in ('527','528', '529','530','531', '532' )
+    AND responses.question_id        = que.question_id
+    GROUP BY cpnt.survey_id
+    )
+  WHERE survey.stud_id             = student.stud_id
+  AND responses.stud_survey_id (+) = survey.stud_survey_id
+  AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+  AND survey.cpnt_survey_id        = '350' --LEVEL-1-EVAL
+  AND responses.question_id         in ('527','528', '529','530','531', '532' )
+  AND responses.question_id        = que.question_id
+  GROUP BY cpnt.survey_id ,
+    'Total: Relevance' ,
+    "Count"
+  )
