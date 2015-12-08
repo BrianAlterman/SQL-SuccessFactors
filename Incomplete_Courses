@@ -1,0 +1,33 @@
+SELECT DISTINCT("STORE"),
+  "EMPLOYEE_ID",
+  "COURSE_TITLE",
+  "ASSIGNED_DATE",
+  "REQUIRED_DATE",
+  "COMPLETED_DATE"
+FROM
+  (SELECT DISTINCT(jl_id) AS "STORE",
+    student.stud_id       AS "EMPLOYEE_ID",
+    qualcpnt.cpnt_id      AS "COURSE_TITLE",
+    qualcpnt.assgn_dte    AS "ASSIGNED_DATE",
+    qualcpnt.req_dte      AS "REQUIRED_DATE",
+    qualcpnt.compl_dte    AS "COMPLETED_DATE"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_qual_cpnt qualcpnt
+  WHERE qualcpnt.stud_id  = student.stud_id
+  --AND student.stud_id     = '610138'
+  AND qualcpnt.compl_dte IS NULL
+  AND qualcpnt.assgn_dte >= (TRUNC(sysdate) - 365)
+  UNION
+  SELECT DISTINCT(jl_id) AS "STORE",
+    student.stud_id      AS "EMPLOYEE_ID",
+    qualcpnt.cpnt_id     AS "COURSE_TITLE",
+    qualcpnt.assgn_dte   AS "ASSIGNED_DATE",
+    qualcpnt.req_dte     AS "REQUIRED_DATE",
+    qualcpnt.compl_dte   AS "COMPLETED_DATE"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_cpnt qualcpnt
+  WHERE qualcpnt.stud_id  = student.stud_id
+  --AND student.stud_id     = '610138'
+  AND qualcpnt.compl_dte IS NULL
+  AND qualcpnt.assgn_dte >= (TRUNC(sysdate) - 365)
+  )
