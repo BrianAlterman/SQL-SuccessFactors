@@ -1,0 +1,28 @@
+SELECT distinct(student.stud_id)  AS "EIN",
+  student.fname         AS "First",
+  student.lname         AS "Last",
+  student.dmn_id        AS "Organization",
+  student.jl_id         AS "Location",
+  student.job_title     AS "Title",
+  cpnt.survey_id        AS "Survey",
+  sec.section_title as "Survey",
+  cpnt.cpnt_id AS "Cpnt ID", label.label_value1 as "Assoc Course" ,
+  survey.assigned_date          AS "Assigned",
+  survey.required_date as "Required",
+  survey.survey_completion_date AS "Completed",
+  ceil(TRUNC(sysdate) - survey.required_date) AS "Days Overdue"
+FROM plateau.pa_student student,
+plateau.pa_survey_section sec,
+  plateau.pa_stud_survey survey,
+  plateau.pa_survey_responses responses,
+  plateau.pa_cpnt_survey cpnt, plateau.pa_catalog_item item, PLATEAU.PA_I18N_ACTIVE_LOCALE_LABEL label
+WHERE survey.stud_id             = student.stud_id
+and sec.survey_id = cpnt.survey_id
+and cpnt.cpnt_id = item.cpnt_id
+AND cpnt.cpnt_survey_id          = survey.cpnt_survey_id
+and item.description = label.label_id
+AND responses.stud_survey_id (+) = survey.stud_survey_id
+and survey.required_date < trunc(sysdate)
+--and student.stud_id = '610138'
+and student.dmn_id not like '98%'
+AND survey.survey_completion_date IS NULL
