@@ -1,0 +1,44 @@
+SELECT DISTINCT("EMPLOYEE_ID"),
+  "First",
+  "Last",
+  "COURSE_TITLE",
+  "Description",
+  "ASSIGNED_DATE",
+  "REQUIRED_DATE",
+  "COMPLETED_DATE"
+FROM
+  (SELECT DISTINCT(jl_id) AS "STORE",
+    student.fname         AS "First",
+    student.lname         AS "Last",
+    student.stud_id       AS "EMPLOYEE_ID",
+    qualcpnt.cpnt_id      AS "COURSE_TITLE",
+    qualcpnt.assgn_dte    AS "ASSIGNED_DATE",
+    qualcpnt.req_dte      AS "REQUIRED_DATE",
+    qualcpnt.compl_dte    AS "COMPLETED_DATE"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_qual_cpnt qualcpnt
+  WHERE qualcpnt.stud_id = student.stud_id
+  AND student.notactive  = 'N'
+  AND qualcpnt.cpnt_id  IN ('THT-COC-2014','THT-HAM-2014','THT-HATM-2014')
+  UNION
+  SELECT DISTINCT(jl_id) AS "STORE",
+    student.fname        AS "First",
+    student.lname        AS "Last",
+    student.stud_id      AS "EMPLOYEE_ID",
+    qualcpnt.cpnt_id     AS "COURSE_TITLE",
+    qualcpnt.assgn_dte   AS "ASSIGNED_DATE",
+    qualcpnt.req_dte     AS "REQUIRED_DATE",
+    qualcpnt.compl_dte   AS "COMPLETED_DATE"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_cpnt qualcpnt
+  WHERE qualcpnt.stud_id = student.stud_id
+  AND student.notactive  = 'N'
+  AND qualcpnt.cpnt_id  IN ('THT-COC-2014','THT-HAM-2014','THT-HATM-2014')
+  ),
+  (SELECT assign.cpnt_id AS "CPNTMAT",
+    label.label_value1   AS "Description"
+  FROM plateau.pa_catalog_item assign,
+    PLATEAU.PA_I18N_ACTIVE_LOCALE_LABEL label
+  WHERE assign.description = label.label_id
+  )
+WHERE "COURSE_TITLE" = "CPNTMAT" (+)
