@@ -1,0 +1,35 @@
+SELECT "EIN",
+  stud.fname AS "First Name",
+  stud.lname AS"Last Name",
+  "OBJ",
+  "DESC",
+  CASE
+    WHEN "TOT Q" = "TOT ANS"
+    THEN 'Complete'
+    ELSE 'Not Complete'
+  END                               AS "Status",
+  ROUND(("TOT COR"/"TOT ANS")*100,2)AS "Score"
+FROM
+  (SELECT stcpnt.stud_id          AS "EIN",
+    exobj.exam_name               AS "OBJ",
+    exdef.description             AS "DESC",
+    SUM(exobj.max_questions)      AS "TOT Q",
+    SUM(stobj.questions_answered) AS "TOT ANS",
+    SUM(stobj.questions_correct)  AS "TOT COR"
+  FROM Plateau.pa_cbt_exam_obj exobj,
+    Plateau.pa_cbt_objective obj,
+    Plateau.pa_cbt_exam_def exdef,
+    Plateau.pa_cbt_stud_exam_obj stobj,
+    Plateau.pa_cbt_stud_cpnt stcpnt
+  WHERE exobj.exam_name   = 'FD-LDS-DEC-PRE'
+  AND exobj.objective_id  = obj.objective_id
+  AND exdef.exam_name     = exobj.exam_name
+  AND stobj.exam_name     = exobj.exam_name
+  AND exobj.objective_id  = stobj.objective_id
+  AND stcpnt.stud_cpnt_id = stobj.stud_cpnt_id
+  GROUP BY stcpnt.stud_id,
+    exobj.exam_name,
+    exdef.description
+  ),
+  plateau.pa_student stud
+WHERE stud.stud_id = "EIN"
