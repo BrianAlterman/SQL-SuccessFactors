@@ -1,0 +1,75 @@
+-- Hiring Manager 2 Week Survey
+SELECT student.stud_id AS "EIN",
+  student.fname        AS "First",
+  student.lname        AS "Last",
+  "Recruiter",
+  survey.cpnt_survey_id         AS "Cpnt ID",
+  survey.stud_survey_id         AS "Stud Cpnt ID",
+  survey.assigned_date          AS "Assigned",
+  survey.survey_completion_date AS "Completed",
+  responses.question_id,
+  question.question_text,
+  TO_CHAR(responses.stud_response_value) AS "Answer"
+FROM plateau.pa_student student,
+  plateau.pa_stud_survey survey,
+  plateau.pa_survey_responses responses,
+  PLATEAU.pa_survey_question question,
+  (SELECT student.stud_id AS "MATEIN",
+    answers.choice_label  AS "Recruiter"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    PLATEAU.pa_survey_question question,
+    PLATEAU.pa_question_answer_choices answers
+  WHERE survey.stud_id              = student.stud_id
+  AND responses.stud_survey_id (+)  = survey.stud_survey_id
+  AND responses.question_id         = question.question_id
+  AND answers.question_id           = question.question_id
+  AND survey.cpnt_survey_id         = '786' --SSC-HMS-WEEK2
+  AND responses.stud_response_value = answers.answer_id
+  AND responses.question_id         = '776'
+  )
+WHERE survey.stud_id             = student.stud_id
+AND responses.stud_survey_id (+) = survey.stud_survey_id
+AND responses.question_id        = question.question_id
+AND survey.cpnt_survey_id        = '786' --SSC-HMS-WEEK2
+AND "MATEIN"                     = student.stud_id
+AND responses.question_id       IN ('777','778','779','780','781','782','783', '784','785')
+
+-- New Hire 2 Week Survey
+SELECT student.stud_id AS "EIN",
+  student.fname        AS "First",
+  student.lname        AS "Last",
+  "Recruiter",
+  survey.cpnt_survey_id         AS "Cpnt ID",
+  survey.stud_survey_id         AS "Stud Cpnt ID",
+  survey.assigned_date          AS "Assigned",
+  survey.survey_completion_date AS "Completed",
+  responses.question_id,
+  question.question_text,
+  TO_CHAR(responses.stud_response_value) AS "Answer"
+FROM plateau.pa_student student,
+  plateau.pa_stud_survey survey,
+  plateau.pa_survey_responses responses,
+  PLATEAU.pa_survey_question question,
+  (SELECT student.stud_id AS "MATEIN",
+    answers.choice_label  AS "Recruiter"
+  FROM plateau.pa_student student,
+    plateau.pa_stud_survey survey,
+    plateau.pa_survey_responses responses,
+    PLATEAU.pa_survey_question question,
+    PLATEAU.pa_question_answer_choices answers
+  WHERE survey.stud_id              = student.stud_id
+  AND responses.stud_survey_id (+)  = survey.stud_survey_id
+  AND responses.question_id         = question.question_id
+  AND answers.question_id           = question.question_id
+  AND survey.cpnt_survey_id         = '703' --SSC-NH-WEEK2
+  AND responses.stud_response_value = answers.answer_id
+  AND responses.question_id         = '673'
+  )
+WHERE survey.stud_id             = student.stud_id
+AND responses.stud_survey_id (+) = survey.stud_survey_id
+AND responses.question_id        = question.question_id
+AND survey.cpnt_survey_id        = '703' --SSC-NH-WEEK2
+AND "MATEIN"                     = student.stud_id
+AND responses.question_id       IN ('674','675','676','677','678','679','680','681')
