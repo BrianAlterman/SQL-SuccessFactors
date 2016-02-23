@@ -1,7 +1,7 @@
-SELECT DISTINCT(qualcp.cpnt_id ) AS "CPNT",
+SELECT DISTINCT(cpt.cpnt_id ) AS "CPNT",
   "Course",
-  qualcp.cpnt_typ_id AS "Type",
-  qualcp.rev_dte     AS "Revision Date",
+  cpt.cpnt_typ_id AS "Type",
+  cpt.rev_dte     AS "Revision Date",
   cpt.NOTACTIVE      AS "Not Active",
   qualcp.qual_id     AS "CIRICULA"
 FROM plateau.pa_stud_qual_cpnt qualst,
@@ -13,8 +13,8 @@ FROM plateau.pa_stud_qual_cpnt qualst,
     PLATEAU.PA_I18N_ACTIVE_LOCALE_LABEL label
   WHERE assign.description = label.label_id
   )
-WHERE qualst.qual_id = qualcp.qual_id
-AND qualcp.cpnt_id   = "CPNTMAT" (+)
-AND cpt.cpnt_id      = qualcp.cpnt_id
-ORDER BY qualcp.cpnt_id,
+WHERE qualst.qual_id (+)= qualcp.qual_id
+AND cpt.cpnt_id      = "CPNTMAT" (+)
+AND cpt.cpnt_id         = qualcp.cpnt_id (+)
+ORDER BY cpt.cpnt_id,
   qualcp.qual_id;
